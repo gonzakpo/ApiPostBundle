@@ -88,7 +88,7 @@ class FacebookApiBack
         //   )
         // ))->execute()->getGraphObject();
         // $this->session = new FacebookSession($this->session->getAccessToken());
-        ladybug_dump($this->session);
+      
         // ladybug_dump_die($response);
     }
 
@@ -158,7 +158,7 @@ class FacebookApiBack
                 echo " with message: " . $e->getMessage();
             }
         }
-        ladybug_dump_die($this->session);
+      
         // $pageInfo = $this->facebook->api("/$facebookId?fields=access_token");
         // echo var_dump($page_info);die;
         // $oid = $facebook->api('/' . $facebookId . '/feed', 'POST', array(
