@@ -13,10 +13,12 @@
     ],
     "require": {
         "symfony/symfony": ">2.2.0, ~2.7",
-        "facebook/php-sdk-v4" : "4.0.*"
+        "facebook/php-sdk-v4": "^5.1"
     },
     "autoload": {
-        "psr-0": {"Tecspro\\Bundle\\ApiPostBundle": ""}
+        "psr-0": {
+            "Tecspro\\Bundle\\ApiPostBundle": ""
+        }
     },
     "target-dir": "Tecspro/Bundle/ApiPostBundle",
     "minimum-stability": "dev",
