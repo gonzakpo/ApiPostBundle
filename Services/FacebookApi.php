@@ -51,8 +51,7 @@ class FacebookApi {
             // Get the Facebook\GraphNodes\GraphUser object for the current user.
             // If you provided a 'default_access_token', the '{access-token}' is optional.
             // $helper = $fb->getRedirectLoginHelper();
-            $permissions = ['email', 'publish_actions']; // optional
-            $loginUrl = $helper->getLoginUrl($this->config['url'], $permissions);
+            $loginUrl = $helper->getLoginUrl($this->config['url'], $this->config['permissions']);
 
             echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
 
