@@ -35,7 +35,7 @@ class FacebookApi {
             'client_id'
         );
         $this->fb = new \Facebook\Facebook([
-            'app_id' => $this->config['id'],
+            'app_id' => $this->config['appId'],
             'app_secret' => $this->config['secret'],
             'default_graph_version' => 'v2.2',
                 //'default_access_token' => '{access-token}', // optional
