@@ -2,7 +2,6 @@
 
 namespace Tecspro\Bundle\ApiPostBundle\Services;
 
-
 class FacebookApi {
 
     private $container;
@@ -31,7 +30,6 @@ class FacebookApi {
         $this->config = array(
             'appId' => $config->getConfigFace()->getAppId(),
             'secret' => $config->getConfigFace()->getSecret(),
-            'token' => $config->getConfigFace()->getSecret(),
             'client_id'
         );
         $this->fb = new \Facebook\Facebook([
@@ -61,9 +59,6 @@ class FacebookApi {
             echo 'Facebook SDK returned an error: ' . $e->getMessage();
             exit;
         }
-
-        $me = $response->getGraphUser();
-        echo 'Logged in as ' . $me->getName();
     }
 
     /**
