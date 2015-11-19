@@ -42,11 +42,12 @@ class FacebookApi {
             $helper = $this->fb->getRedirectLoginHelper();
             $accessToken = $helper->getAccessToken();
             $this->config['token'] = $accessToken;
+            var_dump($this->config['token']);
             // Get the Facebook\GraphNodes\GraphUser object for the current user.
             // If you provided a 'default_access_token', the '{access-token}' is optional.
             // $helper = $fb->getRedirectLoginHelper();
             $permissions = ['email', 'user_likes']; // optional
-            $loginUrl = $helper->getLoginUrl('https://www.facebook.com/Prueba-rodrigo-1682072515338195//login-callback.php', $permissions);
+            $loginUrl = $helper->getLoginUrl('https://www.facebook.com/Prueba-rodrigo-1682072515338195/login-callback.php', $permissions);
 
             echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
             //  $response = $fb->get('/me', 'CAAXaXgDOAagBAPbmZBhr3wi0oGVBRbF6JpGZAXmkvEB7REFAhIkKuIQYEliSLcv4QlSxPuloZApjJF1pM4Pfxn2rqtXPFbECqAOPy8ZCUNUPztQzD4xBCvmd2QenLgNydJJ0BZB6L0HyVP2ZABypzFgm2D2qZA6dghP8yLn4jXgMqEjoGdDxsOrPqJJCPlrsmvhHibCPp8drgZDZD');
