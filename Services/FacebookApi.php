@@ -5,6 +5,7 @@ use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphObject;
 use Facebook\FacebookRequestException;
+use Facebook\FacebookRedirectLoginHelper;
 
 class FacebookApi {
 
@@ -33,19 +34,53 @@ class FacebookApi {
 
         FacebookSession::setDefaultApplication($this->config['appId'], $this->config['secret']);
         // If you already have a valid access token:
-        $this->session = new FacebookSession($this->config['token']);
+        $this->session = new FacebookSession($this->config['accessToken']);
         // If you're making app-level requests:
         $this->session = FacebookSession::newAppSession();
         // To validate the session:
         try {
-          $this->session->validate();
+            $this->session->validate();
         } catch (FacebookRequestException $ex) {
-          // Session not valid, Graph API returned an exception with the reason.
-          echo $ex->getMessage();
+            // Session not valid, Graph API returned an exception with the reason.
+            echo $ex->getMessage();
         } catch (\Exception $ex) {
-          // Graph API returned info, but it may mismatch the current app or have expired.
-          echo $ex->getMessage();
+            // Graph API returned info, but it may mismatch the current app or have expired.
+            echo $ex->getMessage();
         }
+    }
+
+    public function connectFace($config) {
+        $this->config = $config;
+
+        FacebookSession::setDefaultApplication($this->config['appId'], $this->config['secret']);
+        // login helper with redirect_uri
+        $helper = new FacebookRedirectLoginHelper($this->config['url']);
+        
+        try {
+          $this->session = $helper->getSessionFromRedirect();
+        } catch( FacebookRequestException $ex ) {
+          // When Facebook returns an error
+        } catch( Exception $ex ) {
+          // When validation fails or other local issues
+        }
+        // see if we have a session
+        if ($this->session) {
+            // graph api request for user data
+            $request = new FacebookRequest( $this->session, 'GET', '/me' );
+            $response = $request->execute();
+            // get response
+            $graphObject = $response->getGraphObject();
+            var_dump($graphObject);
+            $fbid = $graphObject->getProperty('id');              // To Get Facebook ID
+            $fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
+            $femail = $graphObject->getProperty('email');    // To Get Facebook email ID/
+            //header("Location: index.php");
+        } else {
+            $loginUrl = $helper->getLoginUrl();
+            return $loginUrl;
+        }
+
+        return null;
     }
 
     /**
