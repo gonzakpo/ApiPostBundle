@@ -1,6 +1,10 @@
 <?php
-
 namespace Tecspro\Bundle\ApiPostBundle\Services;
+
+use Facebook\FacebookSession;
+use Facebook\FacebookRequest;
+use Facebook\GraphObject;
+use Facebook\FacebookRequestException;
 
 class FacebookApi {
 
@@ -9,7 +13,6 @@ class FacebookApi {
     private $context;
     private $config;
     private $session;
-    private $fb;
 
     public function __construct($container, $em, $context) {
         $this->container = $container;
@@ -27,43 +30,21 @@ class FacebookApi {
      */
     public function configure($config) {
         $this->config = $config;
-        if (isset($this->config['token'])) {
-            $this->fb = new \Facebook\Facebook([
-                'app_id' => $this->config['appId'],
-                'app_secret' => $this->config['secret'],
-                'default_graph_version' => $this->config['default_graph_version'],
-                'default_access_token' => $this->config['token'], // optional
-            ]);
-        } else {
-            $this->fb = new \Facebook\Facebook([
-                'app_id' => $this->config['appId'],
-                'app_secret' => $this->config['secret'],
-                'default_graph_version' => $this->config['default_graph_version'],
-            ]);
-        }
 
-        $helper = $this->fb->getRedirectLoginHelper();
+        FacebookSession::setDefaultApplication($this->config['appId'], $this->config['secret']);
+        // If you already have a valid access token:
+        $this->session = new FacebookSession($this->config['token']);
+        // If you're making app-level requests:
+        $this->session = FacebookSession::newAppSession();
+        // To validate the session:
         try {
-            $accessToken = $helper->getAccessToken();
-            if (isset($this->config['token']) == false) {
-                $this->config['token'] = $accessToken;
-            }
-            // Get the Facebook\GraphNodes\GraphUser object for the current user.
-            // If you provided a 'default_access_token', the '{access-token}' is optional.
-            // $helper = $fb->getRedirectLoginHelper();
-            $loginUrl = $helper->getLoginUrl($this->config['url'], $this->config['permissions']);
-
-            echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
-
-            //  $response = $fb->get('/me', 'CAAXaXgDOAagBAPbmZBhr3wi0oGVBRbF6JpGZAXmkvEB7REFAhIkKuIQYEliSLcv4QlSxPuloZApjJF1pM4Pfxn2rqtXPFbECqAOPy8ZCUNUPztQzD4xBCvmd2QenLgNydJJ0BZB6L0HyVP2ZABypzFgm2D2qZA6dghP8yLn4jXgMqEjoGdDxsOrPqJJCPlrsmvhHibCPp8drgZDZD');
-        } catch (Facebook\Exceptions\FacebookResponseException $e) {
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
-            exit;
-        } catch (Facebook\Exceptions\FacebookSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Facebook SDK returned an error: ' . $e->getMessage();
-            exit;
+          $this->session->validate();
+        } catch (FacebookRequestException $ex) {
+          // Session not valid, Graph API returned an exception with the reason.
+          echo $ex->getMessage();
+        } catch (\Exception $ex) {
+          // Graph API returned info, but it may mismatch the current app or have expired.
+          echo $ex->getMessage();
         }
     }
 
@@ -74,27 +55,40 @@ class FacebookApi {
      *
      * @return void;
      */
-    public function postInPage($post) {
+    public function postInPage($post)
+    {
+        $idPostFace = null;
 
+        if($this->session) {
+            try {
+                //obtengo el access_token de la page
+                $url = "/".$this->config['idPage']."?fields=access_token";
+                $response = (new FacebookRequest($this->session, 'GET', $url))
+                    ->execute()->getGraphObject();
+                $access_token_page = $response->getProperty('access_token')
+                if ($access_token_page) {
+                    $this->session = new FacebookSession($access_token_page);
+                    $this->session->validate();
+                }
+                //fin obtengo el access_token de la page
+                $url = "/".$this->config['appId']."/feed";
+                $response = (
+                    new FacebookRequest(
+                        $this->session, 'POST', $url, array(
+                            'link'    => $post['link'],
+                            'message' => $post['message'],
+                        )
+                    )
+                )->execute()->getGraphObject();
 
-        try {
-            // Returns a `Facebook\FacebookResponse` object
-            $response = $this->fb->post('/me/feed', $post, $this->config['token']);
-        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            echo 'Graph returned an error: ' . $e->getMessage();
-            exit;
-        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            echo 'Facebook SDK returned an error: ' . $e->getMessage();
-            exit;
+                $idPostFace = $response->getProperty('id');
+            } catch(FacebookRequestException $e) {
+                // echo "Exception occured, code: " . $e->getCode();
+                // echo " with message: " . $e->getMessage();
+                $idPostFace = false;
+            }
         }
 
-        $graphNode = $response->getGraphNode();
-
-        echo 'Posted with id: ' . $graphNode['id'];
+        return $idPostFace;
     }
-
-    private function getUser() {
-        return $this->context->getToken()->getUser();
-    }
-
 }
