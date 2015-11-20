@@ -83,8 +83,8 @@ class FacebookApi {
 
                 $idPostFace = $response->getProperty('id');
             } catch(FacebookRequestException $e) {
-                // echo "Exception occured, code: " . $e->getCode();
-                // echo " with message: " . $e->getMessage();
+                echo "Exception occured, code: " . $e->getCode();
+                echo " with message: " . $e->getMessage();
                 $idPostFace = false;
             }
         }
