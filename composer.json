@@ -13,7 +13,7 @@
     ],
     "require": {
         "symfony/symfony": ">2.2.0, ~2.7",
-        "facebook/php-sdk-v4": "^5.1"
+        "facebook/php-sdk-v4" : "4.0.*"
     },
     "autoload": {
         "psr-0": {
