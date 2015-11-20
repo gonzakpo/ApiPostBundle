@@ -62,7 +62,8 @@ class FacebookApi {
         if($this->session) {
             try {
                 //obtengo el access_token de la page
-                $url = "/".$this->config['idPage']."?fields=access_token";
+                $url = '/'.$this->config["idPage"].'?fields=access_token';
+                echo $url;
                 $response = (new FacebookRequest($this->session, 'GET', $url))
                     ->execute()->getGraphObject();
                 $access_token_page = $response->getProperty('access_token');
@@ -71,7 +72,8 @@ class FacebookApi {
                     $this->session->validate();
                 }
                 //fin obtengo el access_token de la page
-                $url = "/".$this->config['appId']."/feed";
+                $url = '/'.$this->config["appId"].'/feed';
+                echo $url;
                 $response = (
                     new FacebookRequest(
                         $this->session, 'POST', $url, array(
