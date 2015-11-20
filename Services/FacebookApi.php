@@ -65,7 +65,7 @@ class FacebookApi {
                 $url = "/".$this->config['idPage']."?fields=access_token";
                 $response = (new FacebookRequest($this->session, 'GET', $url))
                     ->execute()->getGraphObject();
-                $access_token_page = $response->getProperty('access_token')
+                $access_token_page = $response->getProperty('access_token');
                 if ($access_token_page) {
                     $this->session = new FacebookSession($access_token_page);
                     $this->session->validate();
