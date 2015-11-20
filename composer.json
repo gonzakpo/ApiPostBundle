@@ -13,6 +13,7 @@
     ],
     "require": {
         "symfony/symfony": ">2.2.0, ~2.7",
+        "hwi/oauth-bundle": "^0.3.9",
         "facebook/php-sdk-v4" : "4.0.*"
     },
     "autoload": {
