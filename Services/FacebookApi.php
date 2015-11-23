@@ -7,18 +7,19 @@ use Facebook\GraphObject;
 use Facebook\FacebookRequestException;
 use Facebook\FacebookRedirectLoginHelper;
 
-class FacebookApi {
-
+class FacebookApi
+{
     private $container;
     private $em;
     private $context;
+
     private $config;
     private $session;
 
     public function __construct($container, $em, $context) {
         $this->container = $container;
-        $this->em = $em;
-        $this->context = $context;
+        $this->em        = $em;
+        $this->context   = $context;
     }
 
     /**
@@ -49,7 +50,7 @@ class FacebookApi {
         }
     }
 
-    public function connectFace($config) {
+    public function connectFace($config, $user) {
         $this->config = $config;
 
         FacebookSession::setDefaultApplication($this->config['appId'], $this->config['secret']);
@@ -58,23 +59,26 @@ class FacebookApi {
         
         try {
           $this->session = $helper->getSessionFromRedirect();
-        } catch( FacebookRequestException $ex ) {
+        } catch(FacebookRequestException $ex) {
           // When Facebook returns an error
-        } catch( Exception $ex ) {
+        } catch(Exception $ex) {
           // When validation fails or other local issues
         }
         // see if we have a session
         if ($this->session) {
             // graph api request for user data
-            $request = new FacebookRequest( $this->session, 'GET', '/me' );
+            $request  = new FacebookRequest($this->session, 'GET', '/me');
             $response = $request->execute();
             // get response
             $graphObject = $response->getGraphObject();
-            var_dump($graphObject);
+            //var_dump($graphObject);
             $fbid = $graphObject->getProperty('id');              // To Get Facebook ID
-            $fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
-            $femail = $graphObject->getProperty('email');    // To Get Facebook email ID/
+            //$fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
+            //$femail = $graphObject->getProperty('email');    // To Get Facebook email ID/
             //header("Location: index.php");
+            $userManager = $this->container->get('fos_user.user_manager');
+            $user->setFacebookId($fbid);
+            $userManager->updateUser($user, false);
         } else {
             $loginUrl = $helper->getLoginUrl();
             return $loginUrl;
