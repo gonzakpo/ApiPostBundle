@@ -59,7 +59,7 @@ class FacebookApi
         return $graphObject;
     }
 
-    public function connectFace($config, $idUser) {
+    public function connectFace($config, $user) {
         $this->config = $config;
         $params = array(
             'scope' => 'publish_actions',
@@ -90,10 +90,10 @@ class FacebookApi
             //$fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
             //$femail = $graphObject->getProperty('email');    // To Get Facebook email ID/
             $userManager = $this->container->get('fos_user.user_manager');
-            $user = $userManager->findUserBy(array('id'=>$idUser));
+            //$user = $userManager->findUserBy(array('id'=>$idUser));
             $user->setFacebookId($fbid);
             $user->setFacebookAccessToken($longLivedAccessToken);
-            $userManager->updateUser($user, false);
+            $userManager->updateUser($user);
             if (!$this->controlPermissions('publish_actions')) {
                 $loginUrl = $helper->getLoginUrl($params);
             }
