@@ -62,7 +62,7 @@ class FacebookApi
     public function connectFace($config, $user) {
         $this->config = $config;
         $params = array(
-            'scope' => 'email,publish_actions,manage_pages,status_update',
+            'scope' => 'email,publish_actions,manage_pages',
         );
         $loginUrl = null;
 
@@ -97,8 +97,7 @@ class FacebookApi
             if (
                 !$this->controlPermissions('email') or
                 !$this->controlPermissions('manage_pages') or
-                !$this->controlPermissions('publish_actions') or
-                !$this->controlPermissions('status_update')
+                !$this->controlPermissions('publish_actions')
             ) {
                 $loginUrl = $helper->getLoginUrl($params);
             }
