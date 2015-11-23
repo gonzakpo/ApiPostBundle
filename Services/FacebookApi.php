@@ -79,15 +79,19 @@ class FacebookApi
         }
         // see if we have a session
         if ($this->session) {
+            // User logged in, get the AccessToken entity.
+            $accessToken          = $session->getAccessToken();
+            // Exchange the short-lived token for a long-lived token.
+            $longLivedAccessToken = $accessToken->extend();
             // graph api request for user data
             $graphObject = $this->getGraphObjectUrl('GET', '/me');
             //var_dump($graphObject);
             $fbid = $graphObject->getProperty('id');              // To Get Facebook ID
             //$fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
             //$femail = $graphObject->getProperty('email');    // To Get Facebook email ID/
-            //header("Location: index.php");
             $userManager = $this->container->get('fos_user.user_manager');
             $user->setFacebookId($fbid);
+            $user->setFacebookAccessToken($longLivedAccessToken);
             $userManager->updateUser($user, false);
             if (!$this->controlPermissions('publish_actions')) {
                 $loginUrl = $helper->getLoginUrl($params);
