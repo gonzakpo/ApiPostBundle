@@ -62,7 +62,7 @@ class FacebookApi
     public function connectFace($config, $user) {
         $this->config = $config;
         $params = array(
-            scope => 'publish_actions',
+            'scope' => 'publish_actions',
         );
         $loginUrl = null;
 
