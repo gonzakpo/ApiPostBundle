@@ -146,7 +146,7 @@ class FacebookApi
                     $this->session->validate();
                 }
                 //fin obtengo el access_token de la page
-                $url = '/'.$this->config["appId"].'/feed';
+                $url = '/'.$this->config["idPage"].'/feed';
                 echo $url."<br>";
                 $response = (
                     new FacebookRequest(
