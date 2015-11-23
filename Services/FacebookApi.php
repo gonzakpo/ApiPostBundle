@@ -80,7 +80,7 @@ class FacebookApi
         // see if we have a session
         if ($this->session) {
             // User logged in, get the AccessToken entity.
-            $accessToken          = $session->getAccessToken();
+            $accessToken          = $this->session->getAccessToken();
             // Exchange the short-lived token for a long-lived token.
             $longLivedAccessToken = $accessToken->extend();
             // graph api request for user data
