@@ -50,8 +50,21 @@ class FacebookApi
         }
     }
 
+    private function getGraphObjectUrl($method, $url)
+    {
+        $request     = new FacebookRequest($this->session, $method, $url);
+        $response    = $request->execute();
+        $graphObject = $response->getGraphObject();
+
+        return $graphObject;
+    }
+
     public function connectFace($config, $user) {
         $this->config = $config;
+        $params = array(
+            scope => 'publish_actions',
+        );
+        $loginUrl = null;
 
         FacebookSession::setDefaultApplication($this->config['appId'], $this->config['secret']);
         // login helper with redirect_uri
@@ -67,10 +80,7 @@ class FacebookApi
         // see if we have a session
         if ($this->session) {
             // graph api request for user data
-            $request  = new FacebookRequest($this->session, 'GET', '/me');
-            $response = $request->execute();
-            // get response
-            $graphObject = $response->getGraphObject();
+            $graphObject = $this->getGraphObjectUrl('GET', '/me');
             //var_dump($graphObject);
             $fbid = $graphObject->getProperty('id');              // To Get Facebook ID
             //$fbfullname = $graphObject->getProperty('name'); // To Get Facebook full name
@@ -79,12 +89,27 @@ class FacebookApi
             $userManager = $this->container->get('fos_user.user_manager');
             $user->setFacebookId($fbid);
             $userManager->updateUser($user, false);
+            if (!$this->controlPermissions('publish_actions')) {
+                $loginUrl = $helper->getLoginUrl($params);
+            }
         } else {
-            $loginUrl = $helper->getLoginUrl();
-            return $loginUrl;
+            $loginUrl = $helper->getLoginUrl($params);
         }
 
-        return null;
+        return $loginUrl;
+    }
+
+    private function controlPermissions($permission)
+    {
+        $graphObject = $this->getGraphObjectUrl('GET', '/me/permissions');
+        //si no existe permiso entra
+        if (in_array($permission, $graphObject)) {
+            $return = true;
+        } else {
+            $return = false;
+        }
+
+        return $return;
     }
 
     /**
