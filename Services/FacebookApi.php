@@ -37,7 +37,7 @@ class FacebookApi
         // If you already have a valid access token:
         $this->session = new FacebookSession($this->config['accessToken']);
         // If you're making app-level requests:
-        $this->session = FacebookSession::newAppSession();
+        //$this->session = FacebookSession::newAppSession();
         // To validate the session:
         try {
             $this->session->validate();
@@ -62,7 +62,7 @@ class FacebookApi
     public function connectFace($config, $user) {
         $this->config = $config;
         $params = array(
-            'scope' => 'publish_actions',
+            'scope' => 'email,publish_actions,manage_pages,status_update',
         );
         $loginUrl = null;
 
@@ -94,7 +94,12 @@ class FacebookApi
             $user->setFacebookId($fbid);
             $user->setFacebookAccessToken($longLivedAccessToken);
             $userManager->updateUser($user);
-            if (!$this->controlPermissions('publish_actions')) {
+            if (
+                !$this->controlPermissions('email') or
+                !$this->controlPermissions('manage_pages') or
+                !$this->controlPermissions('publish_actions') or
+                !$this->controlPermissions('status_update')
+            ) {
                 $loginUrl = $helper->getLoginUrl($params);
             }
         } else {
