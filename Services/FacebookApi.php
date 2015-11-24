@@ -146,10 +146,7 @@ class FacebookApi
                 $url = '/'.$this->config["idPage"].'/feed';
                 $response = (
                     new FacebookRequest(
-                        $this->session, 'POST', $url, array(
-                            'link'    => $post['link'],
-                            'message' => $post['message'],
-                        )
+                        $this->session, 'POST', $url, $post
                     )
                 )->execute()->getGraphObject();
 
