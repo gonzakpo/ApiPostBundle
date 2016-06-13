@@ -11,15 +11,13 @@ class FacebookApi
 {
     private $container;
     private $em;
-    private $context;
 
     private $config;
     private $session;
 
-    public function __construct($container, $em, $context) {
+    public function __construct($container, $em) {
         $this->container = $container;
         $this->em        = $em;
-        $this->context   = $context;
     }
 
     /**

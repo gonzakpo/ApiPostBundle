@@ -1,5 +1,5 @@
-#parameters:
-#    tecspro_user_provider.class: Tecspro\Bundle\ApiPostBundle\Security\Core\User\FOSUBUserProvider
+parameters:
+    tecspro_user_provider.class: Tecspro\Bundle\ApiPostBundle\Security\Core\User\FOSUBUserProvider
 
 services:
     tecspro_facebook_api:
@@ -7,8 +7,7 @@ services:
         arguments:
             - "@service_container"
             - "@doctrine.orm.entity_manager"
-            - "@security.context"
 #provider security facebook
-#    tecspro_user_provider:
-#        class: %tecspro_user_provider.class%
-#        arguments: [@fos_user.user_manager, {facebook: facebookId}]
+    tecspro_user_provider:
+        class: %tecspro_user_provider.class%
+        arguments: ['@fos_user.user_manager', { facebook: facebook_id }]
