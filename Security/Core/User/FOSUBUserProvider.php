@@ -51,10 +51,12 @@ class FOSUBUserProvider extends BaseFOSUBProvider
         $setter_token = $setter.'AccessToken';
         // if null just create new user and set it properties
         if (null === $user) {
-            $username = $response->getRealName();
-            $user = new User();
+            $username = $response->getUsername();
+            $user = $this->userManager->createUser();
             $user->setUsername($username);
-
+            $user->setPassword($username);
+            $user->setEmail($userEmail);
+            $user->setEnabled(true);
             // ... save user to database
             $this->userManager->updateUser($user);
 
